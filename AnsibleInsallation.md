@@ -1,6 +1,5 @@
 
 
-
 # 1/ Ansible Installation
 # Become Root user
 sudo su -
@@ -68,11 +67,14 @@ ssh-keygen [No need to pass anything, keep hitting “Enter”]
 
 # Go to .ssh folder
 ls -la
+
 cd .ssh
+
 cat id_rsa.pub
+
 exit
 
-# 5/ Create user and set provileges on target host
+# 5/ Create user and set privileges on target host
 # Login to Dev Instance
 sudo su -
 
@@ -101,7 +103,7 @@ cd /etc/ansible
 sudo vi hosts (Add the target host IP & localhost)
 
 # Copy ssh key to target instance
-ssh-copy-id ansadmin@52.170.29.77
+ssh-copy-id ansadmin@targethostipaddress
 
 # Copy ssh key to localhost
 ssh-copy-id ansadmin@localhost
@@ -127,32 +129,22 @@ cd docker
 
 ls –l
 
-# 2/ Create Playbooks and Dockerfile
-# Login to ansible instance
-su - ansadmin
+# 2/ Create Playbooks and Dockerfile under /opt/docker folder
 
-# Change directory and follow the steps
-cd /opt/docker
-
-# Create a dockerfile
-vi Dockerfile (Refer script folder)
-
-From tomcat:latest
-
-COPY ./webapp.war /usr/local/tomcat/webapps
-
-# Login to Docker hub so when you run playbook the images can be pushed
+# Login to Docker hub once so when you run playbook the images can be pushed
 docker login -u dockerid
 
+# Create a dockerfile
+wget https://raw.githubusercontent.com/duorg/Scripts/master/Dockerfile (Refer script folder)
 
 # Write a playbook to create a docker image and push to docker hub
-vi docker-create-push-webapp.yml (Refer script folder)
+wget https://raw.githubusercontent.com/duorg/Scripts/master/docker-create-push-webapp.yml (Refer script folder)
+
+# Write a playbook to pull docker image and run a container
+wget https://raw.githubusercontent.com/duorg/Scripts/master/docker-pull-run-webapp.yml (Refer script folder)
 
 # Create hosts file
 vi hosts (Add the target host IP & localhost)
-
-# Write a playbook to pull docker image and run a container
-vi docker-pull-run-webapp.yml (Refer script folder)
 
 *******************
 
@@ -160,6 +152,6 @@ vi docker-pull-run-webapp.yml (Refer script folder)
 
 ansible-playbook -i /opt/docker/hosts /opt/docker/docker-create-push-webapp.yml --limit localhost
 
-ansible-playbook -i /opt/docker/hosts /opt/docker/docker-pull-run-webapp.yml --limit 104.211.21.71
+ansible-playbook -i /opt/docker/hosts /opt/docker/docker-pull-run-webapp.yml --limit targethostipaddress
 
 
